@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,15 +33,19 @@ public class TemplateEngineShould {
         assertThat(parse("hola `$user`, hoy es dia `$day`", variables)).isEqualTo("hola carlos, hoy es dia lunes");
     }
 
+    @Test
+    void parse_variables_in_template_2() {
+        Map<String, String> variables = new HashMap<>();
+        variables.put("user2", "raul");
+        assertThat(parse("hola `$user2`", variables)).isEqualTo("hola raul");
+    }
 
     private String parse(String template, Map<String, String> variables) {
-        String user = variables.get("user");
-        String day = variables.get("day");
-        if (user != null) {
-            template = template.replace("`$user`", user);
-        }
-        if (day != null) {
-            template = template.replace("`$day`", day);
+        for (String key : variables.keySet()) {
+            String value = variables.get(key);
+            if (value != null) {
+                template = template.replace("`$" + key + "`", value);
+            }
         }
         return template;
     }
